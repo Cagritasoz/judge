@@ -1,0 +1,12 @@
+{
+  "id" : "f17feaf3-066d-4f1d-ab86-52f8473c7137",
+  "name" : "C Programming",
+  "description" : "GCC-based C compilation and execution",
+  "compilerPath" : "gcc",
+  "interpreterPath" : null,
+  "compileCommandTemplate" : [ "{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}" ],
+  "runCommandTemplate" : [ "{compiledOutputPath}", "{args}" ],
+  "checkCommandTemplate" : [ "{compilerPath}", "--version" ],
+  "sourceFilePattern" : "*.c",
+  "compiledOutputName" : "main.exe"
+}
