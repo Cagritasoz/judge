@@ -3,6 +3,7 @@ package com.cagritasoz.model;
 public enum SubmissionStatus {
     PASS,
     FAIL,
+    IN_PROGRESS,
 
     RUNTIME_ERROR,
     TIMED_OUT,

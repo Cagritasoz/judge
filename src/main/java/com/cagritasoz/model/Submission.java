@@ -2,19 +2,19 @@ package com.cagritasoz.model;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor //Needed for Jackson serialization!
+@NoArgsConstructor // Needed for Jackson serialization!
 public class Submission {
-    private String submissionId;
-    private String filePath;
-    private String fileName;
-    private String extractionPath;
+    private String submissionId; // What is written before ".zip"
+    private String zipFilePath; // Store the path to the zip file.
+    private String zipFileName;
+    private String destinationDir; // Will be under project/work/submissionId-extracted
 
     private SubmissionStatus submissionStatus;
     private Stage stage;
@@ -25,6 +25,6 @@ public class Submission {
     private StageResult runResult;
     private ComparisonResult comparisonResult;
 
-    private LocalDateTime processedAt;
+    private String processedAt;
 
 }

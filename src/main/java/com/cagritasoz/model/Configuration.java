@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 /*
--Specific for each programming language.
--
+-Specific for a programming language.
 */
 
 @Getter
@@ -16,13 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Configuration {
-    private UUID id;
-    private String name;
-    private String description;
+    private UUID configId;
+    private String configName;
+    private String configDescription;
+
+    private boolean requiresEntryPoint;
 
     private String compilerPath;
     private String interpreterPath;
-    private List<String> compileCommandTemplate;
+    private List<String> compileCommandTemplate; // List type because of how a ProcessBuilder works!
     private List<String> runCommandTemplate;
     private List<String> checkCommandTemplate;
 

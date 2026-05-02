@@ -4,15 +4,19 @@ module com.cagritasoz.judge {
     libraries (.jar files), and other resource files (like configuration or image files).
      */
     // JavaFX
-    requires javafx.controls;
+    requires javafx.controls; // pulls in the JavaFX controls JAR
     requires javafx.fxml;
 
     // Jackson
     requires com.fasterxml.jackson.databind;
-    requires com.fasterxml.jackson.datatype.jsr310;
+
+    // Logging
+    requires org.slf4j;
+    requires org.slf4j.simple;
 
     // Lombok — compile-only, no runtime presence
     requires static lombok;
+    requires com.cagritasoz.judge;
 
     // Jackson needs reflective access to model classes for (de)serialization
     opens com.cagritasoz.model to com.fasterxml.jackson.databind;

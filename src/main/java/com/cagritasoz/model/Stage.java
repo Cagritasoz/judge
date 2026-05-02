@@ -1,7 +1,7 @@
 package com.cagritasoz.model;
 
 public enum Stage {
-    DISCOVERY, //
+    DISCOVERY,
     EXTRACTION, // ZIP Extraction stage.
     SOURCE_SEARCH, // Searching for source files stage.
     COMPILE, // Compilation stage

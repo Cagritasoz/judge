@@ -1,7 +1,8 @@
 {
-  "id" : "f17feaf3-066d-4f1d-ab86-52f8473c7137",
-  "name" : "C Programming",
-  "description" : "GCC-based C compilation and execution",
+  "configId" : "b7a9a1c9-d5c8-4b9a-8402-1426f8078146",
+  "configName" : "C Programming",
+  "configDescription" : "GCC-based C compilation and execution",
+  "requiresEntryPoint" : false,
   "compilerPath" : "gcc",
   "interpreterPath" : null,
   "compileCommandTemplate" : [ "{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}" ],
