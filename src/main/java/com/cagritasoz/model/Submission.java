@@ -5,16 +5,14 @@ import lombok.*;
 import java.util.List;
 
 @Data
-@Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor // Needed for Jackson serialization!
 public class Submission {
     private String submissionId; // What is written before ".zip"
-    private String zipFilePath; // Store the path to the zip file.
+    private String zipFilePath; // Store the absolute path to the zip file.
     private String zipFileName;
-    private String destinationDir; // Will be under project/work/submissionId-extracted
+    private String extractionDir; // Will be project\work\submissionId\extracted
 
     private SubmissionStatus submissionStatus;
     private Stage stage;

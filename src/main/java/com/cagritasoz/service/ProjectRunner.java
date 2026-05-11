@@ -19,23 +19,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProjectRunner { // Orchestrates the whole system.
 
-    private final ProjectValidator projectValidator;
+    //private final ProjectValidator projectValidator;
 
-    private final ToolDetector toolDetector;
+    //private final ToolDetector toolDetector;
 
-    private final ConfigStore configStore;
+    //private final ConfigStore configStore;
 
     private final SubmissionPipeline submissionPipeline;
 
-    private final ProjectStore projectStore;
+    //private final ProjectStore projectStore;
 
-    public void run(Project project) { //Run specific project with this config
-        log.info("Running project {}", project.getProjectName());
-        //TODO: Pre run validation in a try catch block. If an exception is caught, exit immediately!
-        //TODO: Get the config here through ConfigStore, pass it to processSubmissions method as a parameter
+    public void run() { //Run specific project with this config
+
         UUID id = UUID.randomUUID();
 
-        Configuration config = new Configuration( // C config for prototype.
+        Project testProject = Project.builder()
+                .projectName("Test Project")
+                .projectDescription("This is a test description")
+                .configId(id)
+                .projectDir("C:\\Users\\VICTUS\\Desktop\\Project")
+                .submissionsDir("C:\\Users\\VICTUS\\Desktop\\Submissions")
+                .build();
+
+
+        Configuration testConfig = new Configuration( // C config for prototype.
                 id,
                 "C Programming",
                 "GCC-based C compilation and execution",
@@ -49,12 +56,17 @@ public class ProjectRunner { // Orchestrates the whole system.
                 "main.exe"
         );
 
+        //TODO: Pre run validation in a try catch block. If an exception is caught, exit immediately!
+        //TODO: Get the config here through ConfigStore, pass it to processSubmissions method as a parameter
+
+        log.info("Running project: {}", testProject.getProjectName());
+
         try {
-            log.info("Starting submission pipeline for project {}", project.getProjectName());
-            submissionPipeline.processSubmissions(project, config);
+            log.info("Starting submission pipeline for project: {}", testProject.getProjectName());
+            submissionPipeline.processSubmissions(testProject, testConfig);
         } catch (IOException e) {
-            log.error("Unexpected error while processing submissions for project {}",
-                    project.getProjectName(), e);
+            log.error("Unexpected error while processing submissions for project: {}",
+                    testProject.getProjectName(), e);
             return;
         }
 

@@ -2,7 +2,6 @@ package com.cagritasoz.validation;
 
 import com.cagritasoz.model.Configuration;
 import com.cagritasoz.model.InputMode;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -16,7 +16,6 @@ module com.cagritasoz.judge {
 
     // Lombok — compile-only, no runtime presence
     requires static lombok;
-    requires com.cagritasoz.judge;
 
     // Jackson needs reflective access to model classes for (de)serialization
     opens com.cagritasoz.model to com.fasterxml.jackson.databind;

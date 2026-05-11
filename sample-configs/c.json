@@ -6,7 +6,7 @@
   "compilerPath" : "gcc",
   "interpreterPath" : null,
   "compileCommandTemplate" : [ "{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}" ],
-  "runCommandTemplate" : [ "{compiledOutputPath}", "{args}" ],
+  "runCommandTemplate" : [ "{compiledOutputName}", "{args}" ],
   "checkCommandTemplate" : [ "{compilerPath}", "--version" ],
   "sourceFilePattern" : "*.c",
   "compiledOutputName" : "main.exe"

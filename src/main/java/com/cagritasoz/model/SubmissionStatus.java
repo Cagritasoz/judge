@@ -10,6 +10,7 @@ public enum SubmissionStatus {
 
     COMPILE_ERROR,
 
+    SOURCE_SEARCH_FAILED,
     NO_SOURCE_FILE,
     ENTRY_POINT_NOT_FOUND,
 

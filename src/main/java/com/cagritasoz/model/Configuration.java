@@ -21,8 +21,8 @@ public class Configuration {
 
     private boolean requiresEntryPoint;
 
-    private String compilerPath;
-    private String interpreterPath;
+    private String compilerPath; // If null only interpreted
+    private String interpreterPath; // If null only compiled, if both exists config is for Java.
     private List<String> compileCommandTemplate; // List type because of how a ProcessBuilder works!
     private List<String> runCommandTemplate;
     private List<String> checkCommandTemplate;

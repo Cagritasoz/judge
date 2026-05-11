@@ -1,18 +1,16 @@
 package com.cagritasoz.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Project {
     private String projectName; // Required
     private String projectDescription; // Optional
@@ -27,7 +25,9 @@ public class Project {
     private String inputData; // Command Arguments, If Input Mode is ARGUMENTS should exist.
     private String expectedOutput; // Required for each project!
     private ComparisonMode comparisonMode; // Required for each project!
-    private List<Submission> submissions; // Submissions are created in the zip extraction stage.
+    
+    @Builder.Default
+    private List<Submission> submissions = new ArrayList<>();
 
     private String lastRunAt;
     private String createdAt;

@@ -1,14 +1,12 @@
 package com.cagritasoz.ui;
 
-import com.cagritasoz.model.Configuration;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cagritasoz.service.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+
+
 
 public class JudgeUIApp extends Application {
 
@@ -20,32 +18,23 @@ public class JudgeUIApp extends Application {
 
     public static void main(String[] args) {
         // launch(args);
-        File file = new File("D:\\Projects\\Judge\\sample-configs\\c.json");
 
-        UUID id = UUID.randomUUID();
 
-        Configuration configuration = new Configuration(
-                id,
-                "C Programming",
-                "GCC-based C compilation and execution",
-                false,
-                "gcc",
-                null,
-                List.of("{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}"),
-                List.of("{compiledOutputPath}", "{args}"),
-                List.of("{compilerPath}", "--version"),
-                "*.c",
-                "main.exe"
-        );
+        ProjectRunner pr = new ProjectRunner(setUp());
 
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
+        pr.run();
+        Platform.exit();
 
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(file, configuration);
-        }
-        catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+
+    }
+
+    public static SubmissionPipeline setUp() {
+        WorkspaceManager workspaceManager = new WorkspaceManager();
+        ZipExtractor zipExtractor = new ZipExtractor();
+        SourceFileFinder sourceFileFinder = new SourceFileFinder();
+        CommandBuilder commandBuilder = new CommandBuilder();
+
+        return new SubmissionPipeline(workspaceManager, zipExtractor, sourceFileFinder, commandBuilder);
+
     }
 }
