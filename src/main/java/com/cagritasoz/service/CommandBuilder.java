@@ -37,7 +37,7 @@ public class CommandBuilder {
     public List<String> buildRunCommand(
             Project project,
             Configuration config,
-            Path workingDir
+            Path executableDir
     ) throws IllegalArgumentException {
         log.info("Building run command...");
 
@@ -45,7 +45,10 @@ public class CommandBuilder {
 
         subs.put("interpreterPath", config.getInterpreterPath()); // Null for C. Fine if null since C config run template
                                                                   // Does not have an {interpreterPath} placeholder.
-        subs.put("compiledOutputName", config.getCompiledOutputName());
+        String compiledOutputName = config.getCompiledOutputName();
+        subs.put("compiledOutputName", compiledOutputName != null
+                ? executableDir.resolve(compiledOutputName).toAbsolutePath().toString()
+                : null);
         subs.put("entryPoint", project.getEntryPoint());
         subs.put("args", parseArgs(project));
 

@@ -31,7 +31,7 @@ public class Project {
 
     private String lastRunAt;
     private String createdAt;
-    private int timeoutSeconds; // Specify how many seconds should be given to a submission to produce an output.
+    private int timeoutSeconds; // Specify how many seconds should be given to a submission to produce an output. Both for compiling and running.
 
     public void addSubmission(Submission submission) {
         submissions.add(submission);

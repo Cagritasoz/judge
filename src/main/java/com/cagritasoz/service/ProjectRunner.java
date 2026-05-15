@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +38,7 @@ public class ProjectRunner { // Orchestrates the whole system.
                 .configId(id)
                 .projectDir("C:\\Users\\VICTUS\\Desktop\\Project")
                 .submissionsDir("C:\\Users\\VICTUS\\Desktop\\Submissions")
+                .timeoutSeconds(2)
                 .build();
 
 
@@ -50,7 +50,7 @@ public class ProjectRunner { // Orchestrates the whole system.
                 "gcc",
                 null,
                 List.of("{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}"),
-                List.of("{compiledOutputPath}", "{args}"),
+                List.of("{compiledOutputName}", "{args}"),
                 List.of("{compilerPath}", "--version"),
                 "*.c",
                 "main.exe"

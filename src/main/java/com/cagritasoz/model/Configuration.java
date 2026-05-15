@@ -9,8 +9,7 @@ import java.util.UUID;
 -Specific for a programming language.
 */
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

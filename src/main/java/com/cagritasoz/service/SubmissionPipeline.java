@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ public class SubmissionPipeline {
 
     private final CommandBuilder commandBuilder;
 
-    //private final ProcessRunner processRunner;
+    private final ProcessRunner processRunner;
 
     //private final OutputComparator outputComparator;
 
@@ -62,9 +63,12 @@ public class SubmissionPipeline {
                 }
                 project.addSubmission(submission);
             }
+            for(Submission submission : project.getSubmissions()) {
+                System.out.println("===============================");
+                System.out.println(submission);
+                System.out.println("===============================");
+            }
         }
-
-
     }
 
     private Submission processSubmissionFile(Path file, Path workDirPath,
@@ -85,7 +89,7 @@ public class SubmissionPipeline {
 
         try { //Pipeline starts, can be thinned out a bit.
 
-            // Stage = DISCOVERY
+            // Start Stage = DISCOVERY
             log.info("Submission file: {}, at stage: {}", file, submission.getStage());
 
             if(!isZipFile(fileName)) { // Skip non zip files
@@ -98,7 +102,9 @@ public class SubmissionPipeline {
 
             log.info("Submission file: {} passes stage: {}", file, submission.getStage());
 
-            // Stage = EXTRACTION
+            // End Stage = DISCOVERY
+
+            // Start Stage = EXTRACTION
             submission.setStage(Stage.EXTRACTION);
 
             Path safeExtractionDir;
@@ -129,7 +135,9 @@ public class SubmissionPipeline {
 
             log.info("Submission file: {} passes stage: {}", file, submission.getStage());
 
-            // Stage = SOURCE_SEARCH
+            // End Stage = EXTRACTION
+
+            // Start Stage = SOURCE_SEARCH
             submission.setStage(Stage.SOURCE_SEARCH);
 
             List<Path> sourceFilesFound;
@@ -161,7 +169,13 @@ public class SubmissionPipeline {
                 return submission;
             }
 
-            // Stage = Compile (If required)
+            log.info("Submission file: {} passes stage: {}", file, submission.getStage());
+
+            // End Stage = SOURCE_SEARCH
+
+            int timeoutSeconds = project.getTimeoutSeconds();
+
+            // Start Stage = COMPILE (If required)
             if(config.getCompilerPath() != null) { // If Compilation is required (For example compilerPath will be null for python)
                 submission.setStage(Stage.COMPILE);
 
@@ -169,7 +183,90 @@ public class SubmissionPipeline {
 
                 List<String> compileCommand = commandBuilder.buildCompileCommand(config, sourceFilesFound, safeExtractionDir);
 
+                Path parent = safeExtractionDir.getParent();
+                Path stdoutFilePath = parent.resolve("compile-stdout.txt");
+                Path stderrFilePath = parent.resolve("compile-stderr.txt");
+
+                StageResult compileResult = processRunner.run(
+                        compileCommand,
+                        safeExtractionDir,
+                        timeoutSeconds, // I might make it so that project has compile/run timeout seconds.
+                        stdoutFilePath,
+                        stderrFilePath
+                );
+
+                submission.setCompileResult(compileResult);
+
+                if(compileResult.isExecuted()) {
+                    String stdout = readBounded(Path.of(compileResult.getStdoutFilePath()));
+                    String stderr = readBounded(Path.of(compileResult.getStderrFilePath()));
+                    if(!stdout.isBlank()) log.info("Compile stdout for [{}]:\n{}", submissionId, stdout.stripTrailing());
+                    if(!stderr.isBlank()) log.info("Compile stderr for [{}]:\n{}", submissionId, stderr.stripTrailing());
+                }
+
+                if(compileResult.isTimedOut()) {
+                    log.warn("Submission [{}] timed out at stage: {}", submissionId, submission.getStage());
+                    submission.setSubmissionStatus(SubmissionStatus.TIMED_OUT);
+                    return submission;
+                }
+
+                if(!compileResult.isExecuted() || compileResult.getExitCode() == null || compileResult.getExitCode() != 0) {
+                    log.warn("Submission [{}] failed at stage: {} with exit code: {}", submissionId, submission.getStage(), compileResult.getExitCode());
+                    submission.setSubmissionStatus(SubmissionStatus.COMPILE_ERROR);
+                    return submission;
+                }
+
+                log.info("Submission file: {} passes stage: {}", file, submission.getStage());
             }
+
+            // End Stage = COMPILE
+
+            // Start Stage = RUN
+            submission.setStage(Stage.RUN); // Every project will have to be run, no need for a check here.
+
+            log.info("Submission file: {}, at stage: {}", file, submission.getStage());
+
+            List<String> runCommand = commandBuilder.buildRunCommand(project, config, safeExtractionDir);
+
+            Path parent = safeExtractionDir.getParent();
+            Path stdoutFilePath = parent.resolve("run-stdout.txt");
+            Path stderrFilePath = parent.resolve("run-stderr.txt");
+
+            StageResult runResult = processRunner.run(
+                    runCommand,
+                    safeExtractionDir,
+                    timeoutSeconds,
+                    stdoutFilePath,
+                    stderrFilePath
+            );
+
+            submission.setRunResult(runResult);
+
+            if(runResult.isExecuted()) {
+                String stdout = readBounded(Path.of(runResult.getStdoutFilePath()));
+                String stderr = readBounded(Path.of(runResult.getStderrFilePath()));
+                if(!stdout.isBlank()) log.info("Run stdout for [{}]:\n{}", submissionId, stdout.stripTrailing());
+                if(!stderr.isBlank()) log.info("Run stderr for [{}]:\n{}", submissionId, stderr.stripTrailing());
+            }
+
+            if(runResult.isTimedOut()) {
+                log.warn("Submission [{}] timed out at stage: {}", submissionId, submission.getStage());
+                submission.setSubmissionStatus(SubmissionStatus.TIMED_OUT);
+                return submission;
+            }
+
+            if(!runResult.isExecuted() || runResult.getExitCode() == null || runResult.getExitCode() != 0) {
+                log.warn("Submission [{}] failed at stage: {} with exit code: {}", submissionId, submission.getStage(), runResult.getExitCode());
+                submission.setSubmissionStatus(SubmissionStatus.RUNTIME_ERROR);
+                return submission;
+            }
+
+            log.info("Submission file: {} passes stage: {}", file, submission.getStage());
+
+            // End Stage = RUN
+
+            // Start Stage = COMPARISON
+
 
 
         }
@@ -200,6 +297,28 @@ public class SubmissionPipeline {
 
     private boolean isZipFile(String fileName) {
         return fileName.toLowerCase().endsWith(".zip");
+    }
+
+    /*
+    - For avoiding an OutOfMemory error when trying to read with Files.readString()
+    - If file size is too big this causes an OutOfMemory exception to be thrown.
+    - Just read some of the file not all of it!
+     */
+
+    private static final int MAX_OUTPUT_BYTES = 8 * 1024; // 8 KB
+
+    private String readBounded(Path filePath) throws IOException {
+        long fileSize = Files.size(filePath);
+        if (fileSize == 0) return "";
+        if (fileSize <= MAX_OUTPUT_BYTES) {
+            return Files.readString(filePath);
+        }
+        byte[] buf = new byte[MAX_OUTPUT_BYTES];
+        int read;
+        try (InputStream is = Files.newInputStream(filePath)) {
+            read = is.read(buf);
+        }
+        return new String(buf, 0, read) + "\n... [output truncated — " + fileSize + " bytes total]";
     }
 
 }

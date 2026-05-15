@@ -33,8 +33,13 @@ public class JudgeUIApp extends Application {
         ZipExtractor zipExtractor = new ZipExtractor();
         SourceFileFinder sourceFileFinder = new SourceFileFinder();
         CommandBuilder commandBuilder = new CommandBuilder();
+        ProcessRunner processRunner = new ProcessRunner();
 
-        return new SubmissionPipeline(workspaceManager, zipExtractor, sourceFileFinder, commandBuilder);
+        return new SubmissionPipeline(workspaceManager,
+                zipExtractor,
+                sourceFileFinder,
+                commandBuilder,
+                processRunner);
 
     }
 }
