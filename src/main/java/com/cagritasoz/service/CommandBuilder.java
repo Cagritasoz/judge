@@ -25,7 +25,7 @@ public class CommandBuilder {
         Map<String, Object> subs = new HashMap<>();
         subs.put("compilerPath", config.getCompilerPath());
         subs.put("sourceFiles", relativizeAll(sourceFilesFound, workingDir));
-        subs.put("compiledOutputName", config.getCompiledOutputName());
+        subs.put("compiledOutputPath", config.getCompiledOutputPath());
 
         List<String> compileCommand = substitute(config.getCompileCommandTemplate(), subs);
 
@@ -45,9 +45,9 @@ public class CommandBuilder {
 
         subs.put("interpreterPath", config.getInterpreterPath()); // Null for C. Fine if null since C config run template
                                                                   // Does not have an {interpreterPath} placeholder.
-        String compiledOutputName = config.getCompiledOutputName();
-        subs.put("compiledOutputName", compiledOutputName != null
-                ? executableDir.resolve(compiledOutputName).toAbsolutePath().toString()
+        String compiledOutputPath = config.getCompiledOutputPath(); // Has to be an absolute path because it was leading to errors.
+        subs.put("compiledOutputPath", compiledOutputPath != null
+                ? executableDir.resolve(compiledOutputPath).toAbsolutePath().toString()
                 : null);
         subs.put("entryPoint", project.getEntryPoint());
         subs.put("args", parseArgs(project));

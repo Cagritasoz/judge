@@ -1,5 +1,6 @@
 package com.cagritasoz.service;
 
+import com.cagritasoz.model.ComparisonMode;
 import com.cagritasoz.model.Configuration;
 import com.cagritasoz.model.Project;
 import com.cagritasoz.persistance.ConfigStore;
@@ -39,6 +40,8 @@ public class ProjectRunner { // Orchestrates the whole system.
                 .projectDir("C:\\Users\\VICTUS\\Desktop\\Project")
                 .submissionsDir("C:\\Users\\VICTUS\\Desktop\\Submissions")
                 .timeoutSeconds(2)
+                .expectedOutput("Hello, Guys!") // \r\n CRLF causes problems. User should be guided well.
+                .comparisonMode(ComparisonMode.IGNORE_WHITESPACE) // Exact match
                 .build();
 
 
@@ -49,8 +52,8 @@ public class ProjectRunner { // Orchestrates the whole system.
                 false,
                 "gcc",
                 null,
-                List.of("{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}"),
-                List.of("{compiledOutputName}", "{args}"),
+                List.of("{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputPath}"),
+                List.of("{compiledOutputPath}", "{args}"),
                 List.of("{compilerPath}", "--version"),
                 "*.c",
                 "main.exe"

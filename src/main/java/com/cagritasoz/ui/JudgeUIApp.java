@@ -34,12 +34,14 @@ public class JudgeUIApp extends Application {
         SourceFileFinder sourceFileFinder = new SourceFileFinder();
         CommandBuilder commandBuilder = new CommandBuilder();
         ProcessRunner processRunner = new ProcessRunner();
+        OutputComparator outputComparator = new OutputComparator();
 
         return new SubmissionPipeline(workspaceManager,
                 zipExtractor,
                 sourceFileFinder,
                 commandBuilder,
-                processRunner);
+                processRunner,
+                outputComparator);
 
     }
 }

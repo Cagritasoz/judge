@@ -23,7 +23,7 @@ public class Project {
     private String entryPoint; // Specify main class name, changes from project to project.
     private InputMode inputMode; // Required for each project.
     private String inputData; // Command Arguments, If Input Mode is ARGUMENTS should exist.
-    private String expectedOutput; // Required for each project!
+    private String expectedOutput; // Required if comparison mode is not ComparisonMode.NO_COMPARISON
     private ComparisonMode comparisonMode; // Required for each project!
     
     @Builder.Default

@@ -27,7 +27,7 @@ public class Configuration {
     private List<String> checkCommandTemplate;
 
     private String sourceFilePattern;
-    private String compiledOutputName;
+    private String compiledOutputPath;
 
 }
 

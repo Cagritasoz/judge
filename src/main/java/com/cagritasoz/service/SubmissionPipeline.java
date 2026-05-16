@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -27,7 +26,7 @@ public class SubmissionPipeline {
 
     private final ProcessRunner processRunner;
 
-    //private final OutputComparator outputComparator;
+    private final OutputComparator outputComparator;
 
     public void processSubmissions(Project project, Configuration config) throws IOException {
 
@@ -45,7 +44,7 @@ public class SubmissionPipeline {
                     })
                     .toList();
 
-            for(Path file : files) { // For every regular file in the submission directory.
+            for(Path file : files) { // For every regular file in the submissions' directory.
                 Submission submission;
                 try {
                     submission = processSubmissionFile(file, workDir, project, config);
@@ -81,7 +80,7 @@ public class SubmissionPipeline {
 
         Submission submission = Submission.builder()
                 .submissionId(submissionId)
-                .zipFilePath(file.toString()) // Naming could be better here.
+                .zipFilePath(file.toString()) // Naming could be better here, or I can get rid of the DISCOVERY stage all together.
                 .zipFileName(fileName)
                 .stage(Stage.DISCOVERY)
                 .processedAt(LocalDateTime.now().toString())
@@ -197,13 +196,6 @@ public class SubmissionPipeline {
 
                 submission.setCompileResult(compileResult);
 
-                if(compileResult.isExecuted()) {
-                    String stdout = readBounded(Path.of(compileResult.getStdoutFilePath()));
-                    String stderr = readBounded(Path.of(compileResult.getStderrFilePath()));
-                    if(!stdout.isBlank()) log.info("Compile stdout for [{}]:\n{}", submissionId, stdout.stripTrailing());
-                    if(!stderr.isBlank()) log.info("Compile stderr for [{}]:\n{}", submissionId, stderr.stripTrailing());
-                }
-
                 if(compileResult.isTimedOut()) {
                     log.warn("Submission [{}] timed out at stage: {}", submissionId, submission.getStage());
                     submission.setSubmissionStatus(SubmissionStatus.TIMED_OUT);
@@ -215,7 +207,6 @@ public class SubmissionPipeline {
                     submission.setSubmissionStatus(SubmissionStatus.COMPILE_ERROR);
                     return submission;
                 }
-
                 log.info("Submission file: {} passes stage: {}", file, submission.getStage());
             }
 
@@ -242,13 +233,6 @@ public class SubmissionPipeline {
 
             submission.setRunResult(runResult);
 
-            if(runResult.isExecuted()) {
-                String stdout = readBounded(Path.of(runResult.getStdoutFilePath()));
-                String stderr = readBounded(Path.of(runResult.getStderrFilePath()));
-                if(!stdout.isBlank()) log.info("Run stdout for [{}]:\n{}", submissionId, stdout.stripTrailing());
-                if(!stderr.isBlank()) log.info("Run stderr for [{}]:\n{}", submissionId, stderr.stripTrailing());
-            }
-
             if(runResult.isTimedOut()) {
                 log.warn("Submission [{}] timed out at stage: {}", submissionId, submission.getStage());
                 submission.setSubmissionStatus(SubmissionStatus.TIMED_OUT);
@@ -257,7 +241,7 @@ public class SubmissionPipeline {
 
             if(!runResult.isExecuted() || runResult.getExitCode() == null || runResult.getExitCode() != 0) {
                 log.warn("Submission [{}] failed at stage: {} with exit code: {}", submissionId, submission.getStage(), runResult.getExitCode());
-                submission.setSubmissionStatus(SubmissionStatus.RUNTIME_ERROR);
+                submission.setSubmissionStatus(SubmissionStatus.RUN_ERROR);
                 return submission;
             }
 
@@ -265,17 +249,57 @@ public class SubmissionPipeline {
 
             // End Stage = RUN
 
-            // Start Stage = COMPARISON
+            // Start Stage = COMPARISON (If required)
 
+            ComparisonMode comparisonMode = project.getComparisonMode();
 
+            submission.setStage(Stage.COMPARISON); // I might set this regardless.
 
+            if(comparisonMode != ComparisonMode.NO_COMPARISON) { // If comparison mode is not NO_COMPARISON, compare
+
+                log.info("Submission file: {}, at stage: {}", file, submission.getStage());
+
+                String expectedOutput = project.getExpectedOutput();
+
+                ComparisonResult comparisonResult;
+
+                try {
+
+                    comparisonResult = outputComparator.compareOutput(
+                            comparisonMode,
+                            stdoutFilePath, // Run output.
+                            expectedOutput);
+
+                    submission.setComparisonResult(comparisonResult);
+
+                } catch (IOException e) {
+                    log.error("Comparison failed for submission [{}]", submissionId, e);
+                    submission.setSubmissionStatus(SubmissionStatus.COMPARISON_FAILED);
+                    return submission;
+                }
+
+                if(comparisonResult.isPassed()) {
+                    log.info("Submission [{}] matches the expected output: {}", submissionId, expectedOutput);
+                    submission.setSubmissionStatus(SubmissionStatus.PASS);
+                    return submission;
+                }
+
+                log.info("Submission [{}] does not match the expected output: {}", submissionId, expectedOutput);
+                submission.setSubmissionStatus(SubmissionStatus.FAIL);
+
+                log.info("Submission file: {} passes stage: {}", file, submission.getStage());
+            }
+            else {
+                submission.setSubmissionStatus(SubmissionStatus.PENDING_REVIEW);
+            }
+
+            // End Stage = COMPARISON
+            
+            return  submission;
         }
         catch(Exception e) { // Catch any unexpected exception
             throw new InternalProcessingException(submission, e);
         }
-
-        return submission;
-
     }
 
     private Submission buildInternalFailure(Path file) {
@@ -298,27 +322,4 @@ public class SubmissionPipeline {
     private boolean isZipFile(String fileName) {
         return fileName.toLowerCase().endsWith(".zip");
     }
-
-    /*
-    - For avoiding an OutOfMemory error when trying to read with Files.readString()
-    - If file size is too big this causes an OutOfMemory exception to be thrown.
-    - Just read some of the file not all of it!
-     */
-
-    private static final int MAX_OUTPUT_BYTES = 8 * 1024; // 8 KB
-
-    private String readBounded(Path filePath) throws IOException {
-        long fileSize = Files.size(filePath);
-        if (fileSize == 0) return "";
-        if (fileSize <= MAX_OUTPUT_BYTES) {
-            return Files.readString(filePath);
-        }
-        byte[] buf = new byte[MAX_OUTPUT_BYTES];
-        int read;
-        try (InputStream is = Files.newInputStream(filePath)) {
-            read = is.read(buf);
-        }
-        return new String(buf, 0, read) + "\n... [output truncated — " + fileSize + " bytes total]";
-    }
-
 }

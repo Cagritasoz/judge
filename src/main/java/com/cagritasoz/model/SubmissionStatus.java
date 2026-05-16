@@ -5,7 +5,10 @@ public enum SubmissionStatus {
     FAIL,
     IN_PROGRESS,
 
-    RUNTIME_ERROR,
+    COMPARISON_FAILED,
+    PENDING_REVIEW,
+
+    RUN_ERROR,
     TIMED_OUT,
 
     COMPILE_ERROR,

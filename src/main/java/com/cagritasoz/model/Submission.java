@@ -25,4 +25,18 @@ public class Submission {
 
     private String processedAt;
 
+    @Override
+    public String toString() {
+        return "Submission Id: " + submissionId + "\n"
+                + "Zip File Path: " + zipFilePath + "\n"
+                + "Zip File Name: " + zipFileName + "\n"
+                + "Extraction Directory: " + extractionDir + "\n"
+                + "Submission Status: " + submissionStatus + "\n"
+                + "Stage: " + stage + "\n"
+                + "Source Files Found: " + sourceFilesFound + "\n"
+                + "Compile Result: " + compileResult + "\n"
+                + "Run Result: " + runResult + "\n"
+                + "Comparison Result: " + comparisonResult + "\n";
+    }
+
 }

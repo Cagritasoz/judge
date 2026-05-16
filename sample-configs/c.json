@@ -5,9 +5,9 @@
   "requiresEntryPoint" : false,
   "compilerPath" : "gcc",
   "interpreterPath" : null,
-  "compileCommandTemplate" : [ "{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputName}" ],
-  "runCommandTemplate" : [ "{compiledOutputName}", "{args}" ],
+  "compileCommandTemplate" : [ "{compilerPath}", "{sourceFiles}", "-o", "{compiledOutputPath}" ],
+  "runCommandTemplate" : [ "{compiledOutputPath}", "{args}" ],
   "checkCommandTemplate" : [ "{compilerPath}", "--version" ],
   "sourceFilePattern" : "*.c",
-  "compiledOutputName" : "main.exe"
+  "compiledOutputPath" : "main.exe"
 }
