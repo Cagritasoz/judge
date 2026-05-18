@@ -41,7 +41,7 @@ public class ProjectRunner { // Orchestrates the whole system.
                 .submissionsDir("C:\\Users\\VICTUS\\Desktop\\Submissions")
                 .timeoutSeconds(2)
                 .expectedOutput("Hello, Guys!") // \r\n CRLF causes problems. User should be guided well.
-                .comparisonMode(ComparisonMode.IGNORE_WHITESPACE) // Exact match
+                .comparisonMode(ComparisonMode.IGNORE_WHITESPACE) // Ignore whitespaces.
                 .build();
 
 
