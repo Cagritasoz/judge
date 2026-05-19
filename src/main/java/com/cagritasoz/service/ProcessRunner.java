@@ -24,7 +24,7 @@ public class ProcessRunner {
 
         processBuilder.directory(workingDir.toFile()); // Set working directory of the process.
 
-        processBuilder.redirectOutput(stdoutFilePath.toFile());
+        processBuilder.redirectOutput(stdoutFilePath.toFile()); // Switch with threads.
 
         processBuilder.redirectError(stderrFilePath.toFile());
 
