@@ -32,5 +32,5 @@ jobs:
           cache: 'maven'
 
       - name: Build and test
-        run: mvn --batch-mode verify -DskipTests
+        run: mvn --batch-mode verify
 
