@@ -1,0 +1,74 @@
+
+
+/* Global Theme Container */
+.root {
+    -judge-background: #0d0d0d;
+    -judge-surface: #1a1a1a;
+    -judge-surface-elevated: #242424;
+    -judge-text-primary: #f0f0f0;
+    -judge-text-secondary: #888888;
+    -judge-accent-red: #e63946;
+    -judge-accent-red-glow: rgba(230, 57, 70, 0.6); /* Transparency */
+}
+
+.main-menu-root {
+    -fx-background-color: -judge-background;
+}
+
+.app-title-judge {
+    -fx-font-family:"Georgia"; /* Which font is used to render text */
+    -fx-font-size: 96px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -judge-text-primary; /* Color of the text */
+    /*
+       dropshadow() Adds glowing shadow around the text
+       parameter 1 is the blur type, controls how the shadow is blurred
+       parameter 2 is the color of the shadow/glow
+       parameter 3 controls blur size/spread, upping it intensifies it.
+       parameter 4 shadow intensity/density, upping it makes glow stronger. Range is 0.0-1.0
+       parameter 5 offset x
+       parameter 6 offset y
+    */
+    -fx-effect: dropshadow(gaussian, -judge-accent-red, 35, 0.5, 0, 0);
+}
+
+.app-subtitle {
+    -fx-font-size: 20px;
+    -fx-text-fill: -judge-text-secondary;
+    -fx-font-style: italic; /* Slanted to the right */
+    -fx-effect: dropshadow(gaussian, -judge-accent-red, 35, 0.4, 0, 0);
+}
+
+.menu-button {
+    -fx-background-color: -judge-surface;
+    -fx-border-color: -judge-accent-red;
+    -fx-border-width: 3;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-min-width: 150px;
+    -fx-min-height: 150px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 150px;
+    -fx-cursor: hand;
+    -fx-padding: 20;
+}
+
+.menu-button:hover { /* Hover action */
+    -fx-background-color: -judge-surface-elevated;
+    -fx-border-color: derive(-judge-accent-red, 20%);
+    -fx-effect: dropshadow(gaussian, -judge-accent-red-glow, 20, 0.2, 0, 0);
+}
+
+.menu-button:pressed { /* Press action */
+    -fx-background-color: derive(-judge-surface-elevated, 10%); /* 10% brighter */
+}
+
+.menu-button-icon {
+    -fx-icon-color: -judge-text-primary;
+}
+
+.menu-button-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -judge-text-primary;
+}

@@ -7,6 +7,11 @@ module com.cagritasoz.judge {
     requires javafx.controls; // pulls in the JavaFX controls JAR
     requires javafx.fxml;
 
+    // Ikonli
+    requires org.kordamp.ikonli.core;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.fontawesome5;
+
     // Jackson
     requires com.fasterxml.jackson.databind;
 
@@ -16,6 +21,7 @@ module com.cagritasoz.judge {
 
     // Lombok — compile-only, no runtime presence
     requires static lombok;
+    requires javafx.graphics;
 
     // Jackson needs reflective access to model classes for (de)serialization
     opens com.cagritasoz.model to com.fasterxml.jackson.databind;
