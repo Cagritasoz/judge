@@ -19,6 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProjectRunner { // Orchestrates the whole system.
 
+    private static final int TIMEOUT_SECONDS = 2;
+
     //private final ProjectValidator projectValidator;
 
     //private final ToolDetector toolDetector;
@@ -39,7 +41,7 @@ public class ProjectRunner { // Orchestrates the whole system.
                 .configId(id)
                 .projectDir("C:\\Users\\VICTUS\\Desktop\\Project")
                 .submissionsDir("C:\\Users\\VICTUS\\Desktop\\Submissions")
-                .timeoutSeconds(2)
+                .timeoutSeconds(TIMEOUT_SECONDS)
                 .expectedOutput("Hello, Guys!") // \r\n CRLF causes problems. User should be guided well.
                 .comparisonMode(ComparisonMode.IGNORE_WHITESPACE) // Ignore whitespaces.
                 .build();
