@@ -8,7 +8,7 @@
     -judge-text-primary: #f0f0f0;
     -judge-text-secondary: #888888;
     -judge-accent-red: #e63946;
-    -judge-accent-red-glow: rgba(230, 57, 70, 0.6); /* Transparency */
+    -judge-accent-red-glow: rgba(230, 57, 70, 0.6); /* Red, Green, Blue, Alpha (Transparency) */
 }
 
 .main-menu-root {
@@ -55,7 +55,7 @@
 
 .menu-button:hover { /* Hover action */
     -fx-background-color: -judge-surface-elevated;
-    -fx-border-color: derive(-judge-accent-red, 20%);
+    -fx-border-color: derive(-judge-accent-red, 20%); /* 20% brighter, put "-" for darker */
     -fx-effect: dropshadow(gaussian, -judge-accent-red-glow, 20, 0.2, 0, 0);
 }
 

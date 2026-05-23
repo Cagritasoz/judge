@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="com.cagritasoz.ui.controller.ProjectEditorController"
+          prefHeight="400.0" prefWidth="600.0">
+    <Label text="TestLabel"/>
+
+</GridPane>

@@ -15,7 +15,7 @@ public class JudgeUIApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL fxmlUrl = Objects.requireNonNull(getClass().getResource("/com/cagritasoz/ui/views/main-menu.fxml"));
+        URL fxmlUrl = Objects.requireNonNull(getClass().getResource(SceneManager.MAIN_MENU));
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
@@ -23,11 +23,18 @@ public class JudgeUIApp extends Application {
                 Objects.requireNonNull(getClass().getResource("/com/cagritasoz/ui/styles/dark-theme.css"))
                         .toExternalForm()
         );
+
+        SceneManager sceneManager = new SceneManager(scene);
+        Object controller = loader.getController();
+        if(controller instanceof SceneAware aware) {
+            aware.setSceneManager(sceneManager);
+        }
         primaryStage.setTitle("Judge");
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
     public static void main(String[] args) {
