@@ -1,15 +1,16 @@
 package com.cagritasoz.ui.controller;
 
+import com.cagritasoz.ui.SceneAware;
+import com.cagritasoz.ui.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.stage.DirectoryChooser;
+import lombok.NoArgsConstructor;
 
-import java.io.File;
+@NoArgsConstructor
+public class MainMenuController implements SceneAware {
 
-public class MainMenuController {
+    private SceneManager sceneManager;
 
     @FXML
     private Button projectsButton;
@@ -45,4 +46,9 @@ public class MainMenuController {
         // TODO: navigate to settings view
     }
 
+    @Override
+    public void setSceneManager(SceneManager sceneManager) {
+        System.out.println("Setting scene manager for " + this.getClass());
+        this.sceneManager = sceneManager;
+    }
 }
